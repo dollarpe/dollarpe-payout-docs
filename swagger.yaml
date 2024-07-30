@@ -1,7 +1,7 @@
 ---
 swagger: '2.0'
 info:
-  title: My API
+  title: DollarPe Payout API
   description: ''
   termsOfService: 'https://www.google.com/policies/terms/'
   contact:
