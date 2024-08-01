@@ -2,14 +2,13 @@
 swagger: '2.0'
 info:
   title: DollarPe Payout API
-  description: ''
+  description: "Welcome to our API documentation!\n\nThis API provides access to real-time cryptocurrency price feeds. Here's how to get started:\n\n1. Authentication:\n- Obtain your API key from the developer portal.\n- Include the API key & APP Secret in the header of each request: X-API-Key: <your_api_key>\n\n2. Base URL:\nAll API requests should be made to: https://api.example.com/v1/\n\n3. Rate Limiting:\n- Free tier: 100 requests per hour\n- Pro tier: 1000 requests per hour\n\n4. Available Endpoints:\n- GET /latest-price-feed: Retrieve the latest prices for all currency pairs\n- GET /historical-price/{pair}: Retrieve historical prices for a specific pair\n\n5. Response Format:\nAll responses are returned in JSON format.\n\n6. Error Handling:\n- 400: Bad Request\n- 401: Unauthorized\n- 403: Forbidden\n- 404: Not Found\n- 429: Too Many Requests\n- 500: Internal Server Error\n\nFor more detailed information on each endpoint, please refer to the specific API documentation below." 
   termsOfService: 'https://www.google.com/policies/terms/'
   contact:
     email: apoorv@dollarpe.com
   license:
     name: BSD License
   version: v1
-host: '127.0.0.1:8000'
 schemes:
   - http
 basePath: /payout/api
@@ -23,54 +22,6 @@ securityDefinitions:
 security:
   - Basic: []
 paths:
-  /introduction:
-    get:
-      operationId: introduction_list
-      summary: API Introduction
-      description: >
-
-        Welcome to our API documentation!
-
-
-        This API provides access to real-time cryptocurrency price feeds. Here's
-        how to get started:
-
-
-        1. Authentication:
-           - Obtain your API key from the developer portal.
-           - Include the API key & APP Secret in the header of each request: X-API-Key: <your_api_key>
-
-        2. Base URL:
-           All API requests should be made to: https://api.example.com/v1/
-
-        3. Rate Limiting:
-           - Free tier: 100 requests per hour
-           - Pro tier: 1000 requests per hour
-
-        4. Available Endpoints:
-           - GET /latest-price-feed: Retrieve the latest prices for all currency pairs
-           - GET /historical-price/{pair}: Retrieve historical prices for a specific pair
-
-        5. Response Format:
-           All responses are returned in JSON format.
-
-        6. Error Handling:
-           - 400: Bad Request
-           - 401: Unauthorized
-           - 403: Forbidden
-           - 404: Not Found
-           - 429: Too Many Requests
-           - 500: Internal Server Error
-
-        For more detailed information on each endpoint, please refer to the
-        specific API documentation below.
-      parameters: []
-      responses:
-        '200':
-          description: ''
-      tags:
-        - Getting Started
-    parameters: []
   /get-latest-price-feed-docs:
     get:
       operationId: get-latest-price-feed-docs_list
@@ -113,6 +64,26 @@ paths:
                 dollarpe_rate:
                   description: CoinDCX weighted average rate in USD
                   type: number
+          examples:
+            application/json:
+              status: true
+              price_feeds:
+                - pair: "BTC-USD"
+                  buckets:
+                    - upto: "2024-07-31T00:00:00Z"
+                      price: 29000.50
+                      price_feed_guid: "feed-guid-1234"
+                    - upto: "2024-07-31T01:00:00Z"
+                      price: 29100.75
+                      price_feed_guid: "feed-guid-5678"
+                - pair: "ETH-USD"
+                  buckets:
+                    - upto: "2024-07-31T00:00:00Z"
+                      price: 1800.30
+                      price_feed_guid: "feed-guid-91011"
+                    - upto: "2024-07-31T01:00:00Z"
+                      price: 1820.25
+                      price_feed_guid: "feed-guid-12131"
         '500':
           description: Internal server error
           schema:
@@ -189,6 +160,21 @@ paths:
               total:
                 description: Total number of orders
                 type: integer
+          examples:
+            application/json:
+              status: true
+              orders:
+                - order_id: "order-1234"
+                  order_date: "2024-07-31T10:00:00Z"
+                  amount: 99.99
+                  status: "completed"
+                - order_id: "order-1235"
+                  order_date: "2024-07-30T09:30:00Z"
+                  amount: 49.50
+                  status: "pending"
+              page: 1
+              pages: 10
+              total: 200
         '500':
           description: Internal server error
           schema:
@@ -247,6 +233,10 @@ paths:
               order_status:
                 description: Order status
                 type: string
+          examples:
+            application/json:
+              status: true
+              order_status: "completed"
         '500':
           description: Internal server error
           schema:
@@ -272,17 +262,39 @@ paths:
 
         ```bash
 
-        curl -X POST "http://your-api-url/payout/api/place-payout-order" -H
-        "accept: application/json" -H "Content-Type: application/json" -d
-        '{"full_name": "John Doe", "email": "john.doe@example.com",
-        "phone_number": "+1234567890", "dob": "1990-01-01", "address": "123 Main
-        St, Anytown, USA", "itr_status": "Submitted", "masked_aadhaar_number":
-        "XXXX-XXXX-1234", "pan_number": "ABCDE1234F", "account_number":
-        "123456789012", "ifsc_code": "IFSC0001234", "sell_amount": 1000.00,
-        "payout_amount": 950.00, "price_feed_guid": "abc123", "onramp_order_id":
-        "order123", "onramp_customer_id": "customer456", "price_offered": 50.00,
-        "onramp_fee": 10.00, "liquidity_partner_fee": 5.00, "network_fee": 2.00,
-        "tds_amount": 3.00, "payment_gateway_fee": 1.00"}'
+        curl -X POST "http://your-api-url/payout/api/place-payout-order" \
+        -H "accept: application/json" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "full_name": "John Doe",
+            "email": "john.doe@example.com",
+            "phone_number": "+1234567890",
+            "dob": "1990-01-01",
+            "address": "Pivot Drive London",
+            "itr_status": "Submitted",
+            "masked_aadhaar_number": "XXXX-XXXX-1234",
+            "pan_number": "ABCDE1234F",
+            "account_number": "123456789012",
+            "ifsc_code": "IFSC0001234",
+            "sell_amount": 1000.00,
+            "payout_amount": 950.00,
+            "price_feed_guid": "abc123",
+            "onramp_order_id": "order123",
+            "onramp_customer_id": "customer456",
+            "price_offered": 50.00,
+            "onramp_fee": 10.00,
+            "liquidity_partner_fee": 5.00,
+            "network_fee": 2.00,
+            "tds_amount": 3.00,
+            "payment_gateway_fee": 1.00,
+            "aadhaar_kyc_data": {
+                "liveliness_check_url": "",
+                "aadhaar_document_url": "",
+                "aadhaar_verification_timestamp": "",
+                "aadhaar_verification_mode": ""
+            }
+        }'
+
 
         ```
       parameters:
