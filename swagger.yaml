@@ -2,13 +2,94 @@
 swagger: '2.0'
 info:
   title: DollarPe Payout API
-  description: "Welcome to our API documentation!\n\nThis API provides access to real-time cryptocurrency price feeds. Here's how to get started:\n\n1. Authentication:\n- Obtain your API key from the developer portal.\n- Include the API key & APP Secret in the header of each request: X-API-Key: <your_api_key>\n\n2. Base URL:\nAll API requests should be made to: https://api.example.com/v1/\n\n3. Rate Limiting:\n- Free tier: 100 requests per hour\n- Pro tier: 1000 requests per hour\n\n4. Available Endpoints:\n- GET /latest-price-feed: Retrieve the latest prices for all currency pairs\n- GET /historical-price/{pair}: Retrieve historical prices for a specific pair\n\n5. Response Format:\nAll responses are returned in JSON format.\n\n6. Error Handling:\n- 400: Bad Request\n- 401: Unauthorized\n- 403: Forbidden\n- 404: Not Found\n- 429: Too Many Requests\n- 500: Internal Server Error\n\nFor more detailed information on each endpoint, please refer to the specific API documentation below." 
-  termsOfService: 'https://www.google.com/policies/terms/'
+  description: |
+    Welcome to our API documentation! This API provides access to real-time cryptocurrency price feeds. Follow the guide below to get started.
+
+    ### 1. Authentication
+
+    Include the API key and API Secret in the header of each request:
+
+    - **X-API-KEY:** `YOUR_API_KEY`
+    - **X-API-SECRET:** `YOUR_API_SECRET`
+
+    The API key and secret are unique to each user and are required for authentication and authorization. Requests without these headers will result in a `400 Bad Request` error.
+
+    ### 2. Base URL
+
+    All API requests should be directed to: 
+
+    `https://payout.stage.dollarpe.com`
+
+    ### 3. Available Endpoints
+
+    - **GET /latest-price-feed**  
+    Retrieves the latest prices for all currency pairs.
+
+    - **GET /get-order-history/{pair}**  
+    Provides historical prices for a specific currency pair.
+
+    - **POST /payout/api/place-payout-order**  
+    Submits a new order.
+
+    - **GET /payout/api/get-order-status/{guid}**  
+    Fetches the status of an order based on the provided GUID.
+
+    ### 4. Response Format
+
+    All responses are returned in JSON format.
+
+    ### 5. Error Handling
+
+    - **400:** Bad Request
+    - **401:** Unauthorized
+    - **403:** Forbidden
+    - **404:** Not Found
+    - **429:** Too Many Requests
+    - **500:** Internal Server Error
+
+
+    For more detailed information on each endpoint, please refer to the specific API documentation below.
   contact:
     email: apoorv@dollarpe.com
   license:
     name: BSD License
   version: v1
+
+responses:
+  BadRequestError:
+    description: API key is missing or invalid
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: false
+        message:
+          type: string
+          example: API key is missing or invalid
+  UnauthorizedError:
+    description: Unauthorized access
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: false
+        message:
+          type: string
+          example: Unauthorized access
+  ForbiddenError:
+    description: Forbidden access
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: false
+        message:
+          type: string
+          example: Forbidden access
+  
 schemes:
   - http
 basePath: /payout/api
@@ -22,9 +103,9 @@ securityDefinitions:
 security:
   - Basic: []
 paths:
-  /get-latest-price-feed-docs:
+  /payout/api/get-latest-price-feed:
     get:
-      operationId: get-latest-price-feed-docs_list
+      operationId: payout/api/get-latest-price-feed
       summary: Get the latest price feed
       description: >-
         Get the latest price feed for all available currency pairs. 
@@ -35,19 +116,19 @@ paths:
 
         ```bash
 
-        curl -X GET "http://your-api-url/payout/api/get-latest-price-feed" -H
+        curl -X GET "https://payout.stage.dollarpe.com/payout/api/get-latest-price-feed" -H
         "accept: application/json"
 
         ```
       parameters:
-        - name: Api-Key
+        - name: X-API-KEY
           in: header
           description: API key for authorization
           required: true
           type: string
-        - name: App-Secret
+        - name: X-API-SECRET
           in: header
-          description: APP secret for authorization
+          description: API secret for authorization
           required: true
           type: string
       responses:
@@ -93,12 +174,18 @@ paths:
                 type: integer
               detail:
                 type: string
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '403':
+          $ref: '#/responses/ForbiddenError'
       tags:
         - Open APIs
     parameters: []
-  /get-order-history-docs:
+  /payout/api/get-order-history:
     get:
-      operationId: get-order-history-docs_list
+      operationId: payout/api/get-order-history
       summary: Get order history
       description: >-
         Retrieve the order history with pagination support.
@@ -110,7 +197,7 @@ paths:
         ```bash
 
         curl -X GET
-        "http://your-api-url/Reference'],/api/get-order-history/?page=1&limit=20"
+        "https://payout.stage.dollarpe.com/payout/api/get-order-history?page=1&limit=20"
         -H "accept: application/json"
 
         ```
@@ -127,12 +214,12 @@ paths:
           required: false
           type: integer
           default: 20
-        - name: Api-Key
+        - name: X-API-KEY
           in: header
           description: API key for authorization
           required: true
           type: string
-        - name: App-Secret
+        - name: X-API-SECRET
           in: header
           description: APP secret for authorization
           required: true
@@ -164,17 +251,16 @@ paths:
             application/json:
               status: true
               orders:
-                - order_id: "order-1234"
-                  order_date: "2024-07-31T10:00:00Z"
-                  amount: 99.99
-                  status: "completed"
-                - order_id: "order-1235"
-                  order_date: "2024-07-30T09:30:00Z"
-                  amount: 49.50
-                  status: "pending"
+                - dp_order_id: "ef4b18be-fae4-4cbb-91b0-94f1d9ecae6e"
+                  onramp_order_id: "abc1234"
+                  order_datetime: "2024-07-31T22:29:13.348"
+                  payout_amount_inr: "89000.0000000000"
+                  order_status: "AML_SCREENING_PASSED"
+                  failure_type: null
+                  failure_description: null
               page: 1
-              pages: 10
-              total: 200
+              pages: 1
+              total: 1
         '500':
           description: Internal server error
           schema:
@@ -187,9 +273,9 @@ paths:
       tags:
         - Open APIs
     parameters: []
-  /get-order-status-docs:
+  /payout/api/get-order-status/<str:guid>:
     get:
-      operationId: get-order-status-docs_list
+      operationId: payout/api/get-order-status/<str:guid>
       summary: Get the status of a specific order
       description: >-
         Retrieve the status of an order using the client order ID.
@@ -201,7 +287,7 @@ paths:
         ```bash
 
         curl -X GET
-        "http://your-api-url/payout/api/get-order-status/{client_order_id}" -H
+        "https://payout.stage.dollarpe.com/payout/api/get-order-status/{client_order_id}" -H
         "accept: application/json"
 
         ```
@@ -211,12 +297,12 @@ paths:
           description: Client order ID
           required: true
           type: string
-        - name: Api-Key
+        - name: X-API-KEY
           in: header
           description: API key for authorization
           required: true
           type: string
-        - name: App-Secret
+        - name: X-API-SECRET
           in: header
           description: APP secret for authorization
           required: true
@@ -236,7 +322,14 @@ paths:
           examples:
             application/json:
               status: true
-              order_status: "completed"
+              order_status:
+                dp_order_id: "ef4b18be-fae4-4cbb-91b0-94f1d9ecae6e"
+                onramp_order_id: "abc1234"
+                order_datetime: "2024-07-31T22:29:13.348"
+                payout_amount_inr: "89000.0000000000"
+                order_status: "AML_SCREENING_PASSED"
+                failure_type: null
+                failure_description: null
         '500':
           description: Internal server error
           schema:
@@ -249,9 +342,9 @@ paths:
       tags:
         - Open APIs
     parameters: []
-  /place-payout-order-docs:
+  /payout/api/place-payout-order:
     post:
-      operationId: place-payout-order-docs_create
+      operationId: payout/api/place-payout-order
       summary: Place a new payout order
       description: >-
         Place a new payout order. 
@@ -262,7 +355,7 @@ paths:
 
         ```bash
 
-        curl -X POST "http://your-api-url/payout/api/place-payout-order" \
+        curl -X POST "https://payout.stage.dollarpe.com/payout/api/place-payout-order" \
         -H "accept: application/json" \
         -H "Content-Type: application/json" \
         -d '{
@@ -274,6 +367,7 @@ paths:
             "itr_status": "Submitted",
             "masked_aadhaar_number": "XXXX-XXXX-1234",
             "pan_number": "ABCDE1234F",
+            "adhar_pan_linked": true,
             "account_number": "123456789012",
             "ifsc_code": "IFSC0001234",
             "sell_amount": 1000.00,
@@ -324,6 +418,10 @@ paths:
               - network_fee
               - tds_amount
               - payment_gateway_fee
+              - aadhaar_kyc_data
+                - liveliness_check_url
+                - aadhaar_verification_timestamp
+                - aadhaar_verification_mode
             type: object
             properties:
               full_name:
@@ -400,12 +498,28 @@ paths:
                 description: Fee charged by the payment gateway
                 type: number
                 format: float
-        - name: Api-Key
+              aadhaar_kyc_data:
+                description: Aadhaar KYC data
+                type: object
+                properties:
+                  liveliness_check_url:
+                    description: URL for the liveliness check
+                    type: string
+                  aadhaar_document_url:
+                    description: URL for the Aadhaar document
+                    type: string
+                  aadhaar_verification_timestamp:
+                    description: Timestamp for Aadhaar verification
+                    type: string
+                  aadhaar_verification_mode:
+                    description: Mode of Aadhaar verification
+                    type: string
+        - name: X-API-KEY
           in: header
           description: API key for authorization
           required: true
           type: string
-        - name: App-Secret
+        - name: X-API-SECRET
           in: header
           description: APP secret for authorization
           required: true
